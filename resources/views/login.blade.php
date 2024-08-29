@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/namari-color.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Preloader styles */
         #preloader {
@@ -22,11 +23,9 @@
             height: 100%;
             background: rgba(255, 255, 255, 0.8);
             display: flex;
-            /* Hidden by default */
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            /* Ensure it's on top of other content */
         }
 
         @keyframes spin {
@@ -41,21 +40,15 @@
 
         .form-box {
             border: 1px solid #e5e7eb;
-            /* Light gray border */
             border-radius: 0.375rem;
-            /* Rounded corners */
             padding: 1.5rem;
-            /* Padding inside the box */
             background-color: #ffffff;
-            /* White background */
-
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-            /* Light shadow */
         }
 
         .flash-message {
             border-radius: 0.375rem;
-            background-color: #e53e3e; /* Red background for error */
+            background-color: #e53e3e;
             color: #ffffff;
             padding: 1rem;
             position: relative;
@@ -83,11 +76,12 @@
             margin-top: 0.25rem;
         }
 
-        .eye-button {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+        .field-icon {
+            float: right;
+            margin-left: -25px;
+            margin-top: -25px;
+            position: relative;
+            z-index: 2;
             cursor: pointer;
         }
 
@@ -138,7 +132,7 @@
                     <div class="mt-2 relative">
                         <input id="password" name="password" type="password" autocomplete="current-password" required
                             class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <span class="eye-button" onclick="togglePasswordVisibility('password')">👁️</span>
+                        <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password pr-6"></span>
                     </div>
                     <p id="passwordError" class="error-message"></p> <!-- Error message for password -->
                 </div>
@@ -197,7 +191,7 @@
                                 window.location.href = "{{ route('first') }}";
                             } else {
                                 localStorage.setItem('api_token', response.token);
-                                window.location.href = "{{ route('profile') }}";
+                                window.location.href = "{{ route('admin.dashboard') }}";
                             }
                         } else {
                             showFlashMessage(response.message);
@@ -216,6 +210,16 @@
                     }
                 });
             });
+
+            $(".toggle-password").click(function() {
+                $(this).toggleClass("fa-eye fa-eye-slash");
+                var input = $($(this).attr("toggle"));
+                if (input.attr("type") == "password") {
+                    input.attr("type", "text");
+                } else {
+                    input.attr("type", "password");
+                }
+            });
         });
 
         function showFlashMessage(message) {
@@ -229,12 +233,6 @@
 
         function hideFlashMessage() {
             $('#flashMessage').fadeOut();
-        }
-
-        function togglePasswordVisibility(id) {
-            var input = document.getElementById(id);
-            var type = input.type === 'password' ? 'text' : 'password';
-            input.type = type;
         }
     </script>
 </body>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
+    <title>First Login</title>
 
     <base href="{{ asset('profile-assets') }}/" />
     <meta name="keywords" content="">
@@ -13,10 +13,10 @@
     <link rel="stylesheet" href="css/namari-color.css">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-
-         /* Preloader styles */
-         #preloader {
+        /* Preloader styles */
+        #preloader {
             position: fixed;
             top: 0;
             left: 0;
@@ -42,12 +42,17 @@
         }
 
         .form-box {
-            border: 1px solid #e5e7eb; /* Light gray border */
-            border-radius: 0.375rem; /* Rounded corners */
-            padding: 1.5rem; /* Padding inside the box */
-            background-color: #ffffff; /* White background */
+            border: 1px solid #e5e7eb;
+            /* Light gray border */
+            border-radius: 0.375rem;
+            /* Rounded corners */
+            padding: 1.5rem;
+            /* Padding inside the box */
+            background-color: #ffffff;
+            /* White background */
 
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); /* Light shadow */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            /* Light shadow */
         }
 
         .flash-message {
@@ -80,16 +85,17 @@
             margin-top: 0.25rem;
         }
 
-        .eye-button {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
+        .field-icon {
+            float: right;
+            margin-left: -25px;
+            margin-top: -25px;
+            position: relative;
+            z-index: 2;
         }
 
-        .password-container {
-            position: relative;
+        .container {
+            padding-top: 50px;
+            margin: auto;
         }
     </style>
 </head>
@@ -121,9 +127,7 @@
                     <input id="new_password" name="new_password" type="password" autocomplete="current-password"
                         required
                         class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <span class="eye-button" onclick="togglePasswordVisibility('new_password')">
-                        👁️
-                    </span>
+                    <span toggle="#new_password" class="fa fa-fw fa-eye field-icon toggle-password pr-6"></span>
                 </div>
                 <p id="newPasswordError" class="error-message"></p> <!-- Error message for new password -->
             </div>
@@ -135,9 +139,7 @@
                     <input id="confirm_password" name="confirm_password" type="password" autocomplete="current-password"
                         required
                         class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <span class="eye-button" onclick="togglePasswordVisibility('confirm_password')">
-                        👁️
-                    </span>
+                    <span toggle="#confirm_password" class="fa fa-fw fa-eye field-icon toggle-password pr-6"></span>
                 </div>
                 <p id="confirmPasswordError" class="error-message"></p> <!-- Error message for confirm password -->
             </div>
@@ -192,7 +194,7 @@
                     success: function(response) {
                         $('#preloader').fadeOut();
                         showFlashMessage();
-                        setTimeout(function () {
+                        setTimeout(function() {
                             window.location.href = "/login";
                         }, 3000);
                     },
@@ -207,18 +209,24 @@
                     }
                 });
             });
+
+            $(".toggle-password").click(function() {
+                $(this).toggleClass("fa-eye fa-eye-slash");
+                var input = $($(this).attr("toggle"));
+                if (input.attr("type") == "password") {
+                    input.attr("type", "text");
+                } else {
+                    input.attr("type", "password");
+                }
+            });
         });
 
-        function togglePasswordVisibility(id) {
-            var input = document.getElementById(id);
-            var type = input.type === 'password' ? 'text' : 'password';
-            input.type = type;
-        }
+
 
         function showFlashMessage() {
             $('#flashMessage').fadeIn();
 
-            setTimeout(function () {
+            setTimeout(function() {
                 hideFlashMessage();
             }, 2000); // Auto hide after 3 seconds
         }

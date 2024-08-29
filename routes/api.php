@@ -28,7 +28,7 @@ Route::post('/reset-password', [ApiController::class, 'resetPassword'])->name('a
 
 // Protected Routes
 Route::group(['middleware' => ['auth:api']], function () {
-    Route::get('profile', [ApiController::class, 'profile']);
+    Route::get('/dashboard', [ApiController::class, 'profile'])->name('admin.dashboard');
     Route::post('logout', [ApiController::class, 'logout']);
     Route::put('update', [ApiController::class, 'update'])->name('update');
     Route::post('first', [ApiController::class, 'first'])->name('api.first');

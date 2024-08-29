@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Namari - Profile Page</title>
     <base href="{{ asset('profile-assets') }}/" />
+    <base href="{{ asset('admincss') }}/" />
     <meta name="keywords" content="">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
