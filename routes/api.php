@@ -30,7 +30,8 @@ Route::post('/reset-password', [ApiController::class, 'resetPassword'])->name('a
 Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/dashboard', [ApiController::class, 'profile'])->name('admin.dashboard');
     Route::post('logout', [ApiController::class, 'logout']);
-    Route::put('update', [ApiController::class, 'update'])->name('update');
+    Route::post('/profile_update', [ApiController::class, 'profile_update'])->name('admin.profile_update');
+    Route::post('/password_update', [ApiController::class, 'password_update'])->name('admin.password_update');
     Route::post('first', [ApiController::class, 'first'])->name('api.first');
 
 });

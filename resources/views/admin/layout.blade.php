@@ -106,6 +106,38 @@
 
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-user"></i>
+
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                        <a href="{{route('admin.profile_update')}}" class="dropdown-item">
+
+                            <div class="media">
+
+                                <div class="media-body">
+                                    <h3 class="dropdown-item-title">
+                                        Profile
+                                    </h3>
+                                </div>
+                            </div>
+
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout" onclick="logoutUser()"" class="dropdown-item"</a>
+
+                            <div class="media">
+                                <div class="media-body">
+                                    <h3 class="dropdown-item-title">
+                                        Logout
+                                    </h3>
+                                </div>
+                            </div>
+
+                        </a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-comments"></i>
                         <span class="badge badge-danger navbar-badge">3</span>
                     </a>
@@ -307,6 +339,35 @@
     <script src="dist/js/demo.js"></script>
 
     <script src="dist/js/pages/dashboard.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const token = localStorage.getItem('api_token');
+            $.ajax({
+                url: '{{ url('/api/dashboard') }}',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                success: function(response) {
+                    if (response.status) {
+                        $('#name').val(response.data.name);
+                        $('#email').val(response.data.email);
+                        $('#phone').val(response.data.phone);
+                        $('#gender').val(response.data.gender);
+                        $('#address').val(response.data.address);
+                    } else {
+                        alert('Failed to load user details. Please try again.');
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    alert('Something went wrong while fetching user details.');
+                }
+            });
+        });
+    </script>
+
     @yield('customJs')
 </body>
 

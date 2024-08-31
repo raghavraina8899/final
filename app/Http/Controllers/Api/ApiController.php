@@ -102,16 +102,47 @@ class ApiController extends Controller
         return response()->json([
             "status" => true,
             "message" => "Profile information",
-            "data" => $user,
-            "id" => auth()->user()->id
+            "data" => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'address' => $user->address,
+                'gender' => $user->gender
+            ]
         ]);
     }
 
-    public function update(Request $request)
+    public function profile_update(Request $request)
     {
         $request->validate([
+
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:14',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'gender' => 'nullable|string|in:male,female,other',
+
+        ]);
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        // Update the user's profile
+        $user->name = $request->input('name');
+        $user->phone = $request->input('phone');
+        $user->address = $request->input('address');
+        $user->gender = $request->input('gender');
+
+        $user->save();
+
+        return response()->json(['status' => true, 'message' => 'Profile updated successfully!', 'data' => $user]);
+    }
+    public function password_update(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'nullable|string',
             'password' => [
                 'required',
                 'string',
@@ -121,20 +152,35 @@ class ApiController extends Controller
                 'regex:/[0-9]/',
                 'regex:/[@$!%*#?&]/',
             ],
+
         ]);
+
 
         $user = Auth::user();
-        $user->name = $request->input('name');
-        $user->phone = $request->input('phone');
-        $user->password = bcrypt($request->input('password'));
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        // Check if current password matches
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Current password does not match.'
+            ], 422);
+        }
+
+        // Update password if provided
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
         $user->save();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Profile updated successfully!',
-            'data' => $user,
-        ]);
+        return response()->json(['status' => true, 'message' => 'Password updated successfully!', 'data' => $user]);
     }
+
+
+
 
     public function logout()
     {

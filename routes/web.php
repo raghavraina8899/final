@@ -17,7 +17,7 @@ Route::get('login', function () {
 Route::get('dashboard', function () {
     return view('/admin.dashboard');
 })->name('admin.dashboard');
-Route::get('profile', function () {
+Route::get('profile_update', function () {
     return view('/admin.profile_update');
 })->name('admin.profile_update');
 Route::get('forgotPassword', function () {
@@ -26,9 +26,9 @@ Route::get('forgotPassword', function () {
 
 // Auth Routes
 Route::middleware('auth:api')->get('/logout', [ApiController::class, 'logout'])->name('logout');
-Route::middleware('auth')->get('/update', function () {
-    return view('update');
-})->name('update');
+// Route::middleware('auth')->get('/update', function () {
+//     return view('update');
+// })->name('update');
 Route::get('/first', function () {
     return view('first');
 })->name('first');
