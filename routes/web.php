@@ -41,3 +41,32 @@ Route::get('/reset-password', function (Request $request) {
     return view('reset_password', compact('email', 'otp'));
 })->name('reset-password-form');
 
+
+
+Route::get('/add_user', function(){
+    return view('admin.add_user');
+})->name('admin.add_user');
+Route::get('/view_user', function(){
+    return view('admin.view_user');
+})->name('admin.view_user');
+Route::get('/edit_user', function(){
+    return view('admin.edit_user');
+})->name('admin.edit_user');
+Route::get('/delete_user', function(){
+    return view('admin.delete_user');
+})->name('admin.delete_user');
+
+
+Route::get('/add_country', function(){
+    return view('admin.country.add_country');
+})->name('admin.add_country');
+Route::get('/view_country', function(){
+    return view('admin.country.view_country');
+})->name('admin.view_country');
+Route::get('/edit_country', function(){
+    return view('admin.country.edit_country');
+})->name('admin.edit_country');
+Route::get('/delete_country', function(){
+    return view('admin.country.delete_country');
+})->name('admin.delete_country');
+

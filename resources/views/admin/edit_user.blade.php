@@ -56,12 +56,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Profile</h1>
+                        <h1>Update User</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item active">Profile</a></li>
+                            <li class="breadcrumb-item active">Update</a></li>
                         </ol>
                     </div>
                 </div>
@@ -70,18 +70,18 @@
 
         <section class="content">
             <div id="flashMessage" class="flash-message">
-                Profile Updated successfully!
+                User Updated successfully!
                 <button class="close-button" onclick="hideFlashMessage()">×</button>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card card-secondary">
+                <div class="col-md-12">
+                    <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">General</h3>
                             <div class="card-tools">
-                                {{-- <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
-                                </button> --}}
+                                </button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -92,7 +92,15 @@
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="text" id="email" class="form-control" value="" readonly>
+                                <input type="text" id="email" class="form-control" value="" >
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <select class="form-control" id="role" name="role" required>
+                                    <option value="">Select Role</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="phone">Phone</label>
@@ -111,44 +119,11 @@
                                 <label for="address">Address</label>
                                 <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
                             </div>
-                            <button id="update_profile" class="btn btn-success float-right">Update Profile</button>
+                            <button id="edit_user" class="btn btn-success float-right">Update User</button>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card card-secondary">
-                        <div class="card-header">
-                            <h3 class="card-title">Update Password</h3>
-                            <div class="card-tools">
-                                {{-- <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button> --}}
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="current_password">Current Password</label>
-                                <input type="password" id="current_password" class="form-control"
-                                    placeholder="Enter current password">
-                                <span toggle="#current_password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="password">New Password</label>
-                                <input type="password" id="password" class="form-control" placeholder="Enter new password">
-                                <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                                <p id="passwordError" class="error-message"></p>
-                            </div>
-                            <div class="form-group">
-                                <label for="confirm_password">Confirm Password</label>
-                                <input type="password" id="confirm_password" class="form-control"
-                                    placeholder="Confirm new password">
-                                <span toggle="#confirm_password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                                <p id="confirmPasswordError" class="error-message"></p>
-                            </div>
-                            <button id="update_password" class="btn btn-success float-right">Update Password</button>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </section>
     </div>
@@ -185,7 +160,7 @@
                 }
             });
 
-            $('#update_profile').on('click', function(e) {
+            $('#edit_user').on('click', function(e) {
                 e.preventDefault();
 
                 $('#newNameError').text('');
@@ -197,7 +172,7 @@
                 };
 
                 $.ajax({
-                    url: '{{ url('/api/profile_update') }}',
+                    url: '{{ url('/api/edit_user') }}',
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + token,

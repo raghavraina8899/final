@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Mail\welcomeemail;
 use App\Mail\ForgotPasswordMail;
+use App\Mail\welcomeUser;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
 
@@ -304,5 +305,77 @@ class ApiController extends Controller
             'status' => true,
             'message' => 'Password has been reset successfully. Please log in with your new credentials.',
         ]);
+    }
+
+
+    public function addUser(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'gender' => 'required|string|in:male,female,other',
+            'role' => 'required|in:admin,user',
+        ]);
+
+        $password = Str::random(10);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'role' => $request->role,
+            'password' => Hash::make($password),
+            'is_first_login' => true,
+        ]);
+
+        event(new Registered($user));
+        Mail::to($user->email)->send(new welcomeUser($user->name, $user->email, $password));
+
+        return response()->json([
+            "status" => true,
+            "message" => "User Added Successfully",
+            // "data" => [$password],
+        ]);
+    }
+
+    public function viewUser()
+    {
+        $users = User::all(); // Fetch all users from the database
+        return response()->json($users);
+    }
+
+    public function editUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User not found'], 404);
+        }
+
+        return response()->json([
+            "status" => true,
+            "message" => "User details",
+            "data" => $user
+        ]);
+    }
+
+
+
+    public function deleteUser(Request $request, $id)
+    {
+        // Validate that the user exists
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Delete the user
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully']);
     }
 }
