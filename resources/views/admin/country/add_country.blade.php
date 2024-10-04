@@ -83,7 +83,7 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item active">Add Country</a></li>
+                            <li class="breadcrumb-item active">Add Country</li>
                         </ol>
                     </div>
                 </div>
@@ -100,8 +100,8 @@
                     <div class="card card-secondary">
                         <div class="card-header">
                             <h3 class="card-title">Country Details</h3>
-                            <div class="card-tools">
-                            </div>
+                            {{-- <div class="card-tools">
+                            </div> --}}
                         </div>
                         <div class="card-body">
                             <div class="form-group">
@@ -114,7 +114,7 @@
                                 <input type="text" id="code" name = "code" class="form-control text-uppercase" value="">
                                 <p id="newCodeError" class="error-message"></p>
                             </div>
-                            <button id="add_country" class="btn btn-success float-right">Add User</button>
+                            <button id="add_country" class="btn btn-success float-right">Add Country</button>
                         </div>
                     </div>
                 </div>
@@ -152,8 +152,8 @@
                     success: function(response) {
                         showFlashMessage();
                         setTimeout(function() {
-                            location.reload();
-                        }, 2000);
+                            window.location.href = "{{ route('admin.view_country') }}";
+                        }, 1000);
                     },
                     error: function(xhr) {
                         var errors = xhr.responseJSON.errors;

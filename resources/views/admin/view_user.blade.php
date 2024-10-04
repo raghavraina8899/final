@@ -12,12 +12,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Users</h1>
+                        <h1>{{ __('lang.users') }}</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item active">Users List</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('lang.home') }}</a></li>
+                            <li class="breadcrumb-item active">{{ __('lang.usersList') }}</li>
                         </ol>
                     </div>
                 </div>
@@ -30,20 +30,20 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Users List</h3>
+                                <h3 class="card-title">{{ __('lang.usersList') }}</h3>
                             </div>
                             <div class="card-body">
                                 <table id="usersTable" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>S.No.</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Role</th>
-                                            <th>Gender</th>
-                                            <th>Edit</th>
-                                            <th>Delete</th>
+                                            <th>{{ __('lang.s.no.') }}</th>
+                                            <th>{{ __('lang.name') }}</th>
+                                            <th>{{ __('lang.email') }}</th>
+                                            <th>{{ __('lang.phone') }}</th>
+                                            <th>{{ __('lang.role') }}</th>
+                                            <th>{{ __('lang.gender') }}</th>
+                                            <th>{{ __('lang.edit') }}</th>
+                                            <th>{{ __('lang.delete') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -51,14 +51,14 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>S.No.</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Role</th>
-                                            <th>Gender</th>
-                                            <th>Edit</th>
-                                            <th>Delete</th>
+                                            <th>{{ __('lang.s.no.') }}</th>
+                                            <th>{{ __('lang.name') }}</th>
+                                            <th>{{ __('lang.email') }}</th>
+                                            <th>{{ __('lang.phone') }}</th>
+                                            <th>{{ __('lang.role') }}</th>
+                                            <th>{{ __('lang.gender') }}</th>
+                                            <th>{{ __('lang.edit') }}</th>
+                                            <th>{{ __('lang.delete') }}</th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -76,17 +76,17 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">{{ __('lang.confirmDelete') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this user?
+                {{ __('lang.deleteMessage') }}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('lang.cancel') }}</button>
+                    <button type="button" id="confirmDelete" class="btn btn-danger">{{ __('lang.delete') }}</button>
                 </div>
             </div>
         </div>
@@ -116,7 +116,7 @@
 
             function fetchUsers() {
                 $.ajax({
-                    url: '{{ route('api.view_user') }}',
+                    url: '{{ route('api.view_users') }}',
                     method: 'GET',
                     headers: {
                         'Authorization': 'Bearer ' + token,
@@ -132,9 +132,9 @@
                                 <td>${user.phone}</td>
                                 <td>${user.role}</td>
                                 <td>${user.gender}</td>
-                                <td><a href="{{ route('admin.edit_user') }}" class="btn btn-primary">Edit</a></td>
+                                <td><a href="{{ url('admin/edit_user') }}/${user.id}" class="btn btn-primary">{{ __('lang.edit') }}</a></td>
 
-                                <td><a href="#" class="btn btn-danger delete-btn" data-id="${user.id}">Delete</a></td>
+                                <td><a href="#" class="btn btn-danger delete-btn" data-id="${user.id}">{{ __('lang.delete') }}</a></td>
                             </tr>`;
                         });
                         $('#usersTable tbody').html(tableBody);

@@ -6,11 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <base href="{{ asset('profile-assets') }}/" />
+    
     <meta name="keywords" content="">
     <meta name="description" content="">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/namari-color.css">
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="/usercss/css/main.css" rel="stylesheet">
     <style>
         /* Preloader styles */
         #preloader {
@@ -78,16 +81,28 @@
     </style>
 </head>
 
-<body>
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top pl-6">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+      <a href="/" class="logo d-flex align-items-center me-auto">
+        <img src="https://www.acropolis.org/wp-content/uploads/2022/07/LogoNA-VSG-e1659015536206.png" alt="">
+      </a>
+
+      
+
+    </div>
+  </header>
 
     <!-- Preloader -->
-    <div id="preloader">
+    <!-- <div id="preloader">
         <div class="la-ball-triangle-path">
             <div></div>
             <div></div>
             <div></div>
         </div>
-    </div>
+    </div> -->
 
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -182,7 +197,7 @@
                         showFlashMessage();
                         setTimeout(function() {
                             window.location.href = "/login";
-                        }, 3000);
+                        }, 1000);
                     },
                     error: function(xhr) {
                         $('#preloader').fadeOut();

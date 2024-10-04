@@ -108,7 +108,7 @@
                 <div class="password-container">
                     <label for="new_password" class="block text-sm font-medium leading-6 text-gray-900">New Password</label>
                     <div class="mt-2 relative">
-                        <input id="new_password" name="new_password" type="password" autocomplete="current-password" required
+                        <input id="new_password" name="new_password" type="password" autocomplete="current-password"
                             class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         <span toggle="#new_password" class="fa fa-fw fa-eye field-icon toggle-password pr-6"></span>
                     </div>
@@ -118,7 +118,7 @@
                 <div class="password-container mt-4">
                     <label for="confirm_password" class="block text-sm font-medium leading-6 text-gray-900">Confirm Password</label>
                     <div class="mt-2 relative">
-                        <input id="confirm_password" name="confirm_password" type="password" autocomplete="current-password" required
+                        <input id="confirm_password" name="confirm_password" type="password" autocomplete="current-password"
                             class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         <span toggle="#confirm_password" class="fa fa-fw fa-eye field-icon toggle-password pr-6"></span>
                     </div>
@@ -134,12 +134,31 @@
     </div>
 
     <script>
-        $(document).ready(function() {
-            $(window).on('load', function() {
+        $(document).ready(function () {
+            $(window).on('load', function () {
                 $("#preloader").fadeOut("slow");
             });
 
-            $('#resetPasswordForm').on('submit', function(e) {
+            // Periodically check if the token is still valid
+            setInterval(function() {
+                var token = $('#token').val();
+
+                $.ajax({
+                    url: '{{ url('/api/check-token-validity') }}', // API route for token validation
+                    type: 'GET',
+                    data: {
+                        token: token
+                    },
+                    success: function (response) {
+                        if (!response.status) {
+                            // Token is invalid or expired, redirect to 404 page
+                            window.location.href = "{{ route('404.page') }}";
+                        }
+                    }
+                });
+            }, 30000); // Check every 30 seconds
+
+            $('#resetPasswordForm').on('submit', function (e) {
                 e.preventDefault();
 
                 // Clear previous error messages
@@ -151,13 +170,35 @@
                 var confirmPassword = $('#confirm_password').val();
                 var token = $('#token').val();
 
-                if (newPassword !== confirmPassword) {
+                var hasError = false; // Flag to check if there's any error
+
+                // Validate New Password
+                if (newPassword === "") {
+                    $('#newPasswordError').text('New password is required.');
+                    hasError = true; // Set the error flag to true
+                }
+
+                // Validate Confirm Password
+                if (confirmPassword === "") {
+                    $('#confirmPasswordError').text('Confirm password is required.');
+                    hasError = true; // Set the error flag to true
+                }
+
+                // Check if passwords match (only if both fields are filled)
+                if (!hasError && newPassword !== confirmPassword) {
                     $('#confirmPasswordError').text('Passwords do not match.');
+                    hasError = true; // Set the error flag to true
+                }
+
+                // If there are any errors, stop form submission
+                if (hasError) {
                     return;
                 }
 
+                // Show the preloader if no error
                 $('#preloader').fadeIn();
 
+                // Submit the AJAX request to reset the password
                 $.ajax({
                     url: '{{ url('/api/reset-password') }}',
                     type: 'POST',
@@ -165,14 +206,14 @@
                         new_password: newPassword,
                         token: token
                     },
-                    success: function(response) {
+                    success: function (response) {
                         $('#preloader').fadeOut();
                         showFlashMessage();
                         setTimeout(function () {
                             window.location.href = "/login";
                         }, 3000);
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         $('#preloader').fadeOut();
                         var errors = xhr.responseJSON.errors;
                         if (errors && errors.new_password) {
@@ -180,11 +221,17 @@
                         } else {
                             $('#resetPasswordMessage').text(xhr.responseJSON.message);
                         }
+
+                        // Redirect to 404 page if token is expired
+                        if (xhr.status === 400 && xhr.responseJSON.message === 'Invalid or expired reset token.') {
+                            window.location.href = "{{ route('404.page') }}";
+                        }
                     }
                 });
             });
 
-            $(".toggle-password").click(function() {
+            // Toggle password visibility
+            $(".toggle-password").click(function () {
                 $(this).toggleClass("fa-eye fa-eye-slash");
                 var input = $($(this).attr("toggle"));
                 if (input.attr("type") == "password") {
@@ -196,17 +243,17 @@
         });
 
         function showFlashMessage() {
-            $('#flashMessage').fadeIn();
-
+            $("#flashMessage").fadeIn();
             setTimeout(function () {
-                hideFlashMessage();
-            }, 5000); // Auto hide after 5 seconds
+                $("#flashMessage").fadeOut();
+            }, 3000);
         }
 
         function hideFlashMessage() {
-            $('#flashMessage').fadeOut();
+            $("#flashMessage").fadeOut();
         }
     </script>
+
 </body>
 
 </html>

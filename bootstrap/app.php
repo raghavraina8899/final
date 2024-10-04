@@ -12,11 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // $middleware->alias(
-        //     [
-        //         'auth' => \App\Http\Middleware\Authenticate::class,
-        //     ]
-        // );
+        $middleware->alias(
+            [
+                'prevent-url-change' => \App\Http\Middleware\PreventUrlChange::class,
+                'check.reset.token' => \App\Http\Middleware\CheckResetToken::class,
+                'setlocale' => \App\Http\Middleware\SetLocale::class,
+            ]
+        );
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

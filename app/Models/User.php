@@ -25,7 +25,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender',
         'address',
         'role',
+        'country_id',
+        'state_id',
+        'city_id',
+        'branch_id',
+        // 'product_id',
+        'profile_picture',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -49,4 +56,30 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function state()
+    {
+        return $this->belongsTo(State::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_user')->withPivot('quantity','total_price');
+    }
+
 }

@@ -8,10 +8,13 @@
 </head>
 
 <body>
-    <h1>Welcome to Our Platform, {{ $name }}!</h1>
-    <p>Here is your Password Reset Option.</p>
+    <h1>Hello {{ $name }}!</h1>
+    <p>You asked to reset your password. To do so, please click this link:</p>
     {{-- <p><strong>Email:</strong> {{ $email }}</p> --}}
-    <p><strong>Reset Password:</strong> {{ $url }}</p>
+    <p> {{ $url }}</p>
+    <p>This will let you change your password to something new. If you did not ask for this, do not worry, we will keep your password safe.</p>
+    <p>Kind regards</p>
+    <p>Team Acropolis</p>
     {{-- <p>Please change your password after logging in for the first time.</p> --}}
 </body>
 

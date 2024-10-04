@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('reset_token', 255)->nullable()->after('remember_token');
+            $table->timestamp('reset_token_expiration', 255)->nullable()->default('null')->after('reset_token');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('reset_token');
+            $table->dropColumn('reset_token_expiration');
         });
     }
 };
