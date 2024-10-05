@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendEmailJob;
+use App\Mail\ProductBookedMail;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +29,17 @@ class BookingController extends Controller
 
     $totalPrice = $product->product_cost * $quantity; 
 
-    \Log::info("Product Cost: {$product->product_cost}, Quantity: {$quantity}, Total Price: {$totalPrice}");
+    // \Log::info("Product Cost: {$product->product_cost}, Quantity: {$quantity}, Total Price: {$totalPrice}");
 
     
     $user->products()->attach($productId, [
         'quantity' => $quantity,
         'total_price' => $totalPrice,
     ]);
+
+    $product_name = $product->product_name;
+
+    SendEmailJob::dispatch($user->email, new ProductBookedMail($user->name, $product_name, $quantity, $totalPrice));
 
     return response()->json(['status' => true, 'message' => 'Product booked successfully']);
 }

@@ -69,16 +69,6 @@
                                 <tbody>
                                     <!-- Data will be populated via AJAX -->
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>S.No.</th>
-                                        <th>Branch Name</th>
-                                        <th>Branch Address</th>
-                                        <th>PIN</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -146,7 +136,7 @@
 @endsection
 
 @section('customJs')
-    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+    <!-- <script src="plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
     <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
@@ -159,7 +149,7 @@
     <script src="plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
     <script>
         $(document).ready(function() {
             const token = localStorage.getItem('api_token');
@@ -186,12 +176,12 @@
                             </tr>`;
                         });
                         $('#branchTable tbody').html(tableBody);
-                        $('#branchTable').DataTable({
-                            "responsive": true,
-                            "lengthChange": false,
-                            "autoWidth": false,
-                            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                        }).buttons().container().appendTo('#branchTable_wrapper .col-md-6:eq(0)');
+                        // $('#branchTable').DataTable({
+                        //     "responsive": true,
+                        //     "lengthChange": false,
+                        //     "autoWidth": false,
+                        //     "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                        // }).buttons().container().appendTo('#branchTable_wrapper .col-md-6:eq(0)');
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching Branch data:', error);

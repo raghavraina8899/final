@@ -13,6 +13,8 @@
     <p><strong>Email:</strong> {{ $email }}</p>
     <p><strong>Password:</strong> {{ $password }}</p>
     <p>Please change your password after logging in for the first time.</p>
+    <p>Kind regards</p>
+    <p>Team New Acropolis</p>
 </body>
 
 </html>

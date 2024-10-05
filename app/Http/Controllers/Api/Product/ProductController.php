@@ -12,8 +12,7 @@ class ProductController extends Controller
 {
     public function viewProductList(): JsonResponse
     {
-        session(['url.intended' => url()->current()]);
-        return response()->json(Product::all(), 200);
+        return response()->json(Product::paginate(8), 200);
     }
 
     public function registerProduct(RegisterProductRequest $request): JsonResponse
@@ -26,9 +25,10 @@ class ProductController extends Controller
 
         $productData = $request->validated();
 
-        // Handle image upload if provided
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('product_images', 'public'); // Store image in public storage
+
+            $imagePath = $request->file('image')->store('product_images', 'public');
+
             $productData['image_url'] = $imagePath;
         }
 
@@ -40,7 +40,6 @@ class ProductController extends Controller
 
     public function viewProduct($id): JsonResponse
     {
-        session(['url.intended' => url()->current()]);
         $product = Product::find($id);
 
         if (!$product) {

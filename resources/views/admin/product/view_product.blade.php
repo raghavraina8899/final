@@ -20,6 +20,16 @@
             transform: translateY(0);
         }
 
+        .pagination{
+            justify-content: right;
+            margin: 8px 0px;
+        }
+        .pagination button{
+            /* margin: 0 5px; */
+            border: 1px solid darkgrey;
+        }
+        
+
         /* Additional styling can go here */
     </style>
 @endsection
@@ -63,16 +73,16 @@
                                 <tbody>
                                     <!-- Data will be populated via AJAX -->
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>S.No.</th>
-                                        <th>Product Name</th>
-                                        <th>Product Cost</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </tfoot>
                             </table>
+                            <div class="pagination">
+                                <div class="buttons">
+                                    <button id="prevPage" class="btn btn-primary" disabled>Previous</button>
+                                    <button id="firstPage" class="btn btn-light page-btn">First</button>
+                                    <span id="currentPage" class="page-btn"></span>
+                                    <button id="lastPage" class="btn btn-light page-btn">Last</button>
+                                    <button id="nextPage" class="btn btn-primary">Next</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -155,7 +165,7 @@
 @endsection
 
 @section('customJs')
-    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+    <!-- <script src="plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
     <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
@@ -167,157 +177,197 @@
     <script src="plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
     <script>
-        $(document).ready(function() {
-            const token = localStorage.getItem('api_token');
-            let selectedProductId = null;
+    $(document).ready(function() {
+        const token = localStorage.getItem('api_token');
+        let selectedProductId = null;
+        let currentPage = 1; // Track the current page
+        let totalPages = 1; // Track the total number of pages
 
-            // Function to fetch the Product list and populate the DataTable
-            function fetchProductList() {
-                $.ajax({
-                    url: '{{ route('api.view-product-list') }}',
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    success: function(data) {
-                        let tableBody = '';
-                        $.each(data, function(index, product) {
-                            tableBody += `<tr>
-                                <td>${index + 1}</td>
-                                <td>${product.product_name}</td>
-                                <td>${product.product_cost}</td>
-                                <td><a href="#" class="btn btn-primary edit-btn" data-id="${product.id}">Edit</a></td>
-                                <td><a href="#" class="btn btn-danger delete-btn" data-id="${product.id}">Delete</a></td>
-                            </tr>`;
-                        });
-                        $('#productTable tbody').html(tableBody);
-                        $('#productTable').DataTable({
-                            "responsive": true,
-                            "lengthChange": false,
-                            "autoWidth": false,
-                            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                        }).buttons().container().appendTo('#productTable_wrapper .col-md-6:eq(0)');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching Product data:', error);
-                    }
-                });
+        // Function to fetch the Product list and populate the DataTable
+        function fetchProductList(page = 1) {
+            $.ajax({
+                url: `{{ route('api.view-product-list') }}?page=${page}`, // Add page parameter
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                success: function(data) {
+                    let tableBody = '';
+                    $.each(data.data, function(index, product) { // Adjusted to access the data array
+                        tableBody += `<tr>
+                            <td>${(page - 1) * data.per_page + index + 1}</td>
+                            <td>${product.product_name}</td>
+                            <td>${product.product_cost}</td>
+                            <td><a href="#" class="btn btn-primary edit-btn" data-id="${product.id}">Edit</a></td>
+                            <td><a href="#" class="btn btn-danger delete-btn" data-id="${product.id}">Delete</a></td>
+                        </tr>`;
+                    });
+                    $('#productTable tbody').html(tableBody);
+                    totalPages = data.last_page; // Get the total number of pages
+                    updatePagination(); // Call function to update pagination display
+
+                    // Initialize DataTable
+                    // $('#productTable').DataTable({
+                    //     "responsive": true,
+                    //     "lengthChange": false,
+                    //     "autoWidth": false,
+                    //     "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                    // }).buttons().container().appendTo('#productTable_wrapper .col-md-6:eq(0)');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching Product data:', error);
+                }
+            });
+        }
+
+        // Function to update pagination display
+        function updatePagination() {
+            $('#currentPage').text(currentPage);
+            // $('#lastPage').text(totalPages);
+
+            $('#prevPage').prop('disabled', currentPage === 1);
+            $('#nextPage').prop('disabled', currentPage === totalPages);
+        }
+
+        // Handle Edit Button Click
+        $('#productTable').on('click', '.edit-btn', function(e) {
+            e.preventDefault();
+            selectedProductId = $(this).data('id');
+            $.ajax({
+                url: `{{ route('api.view-product', ['id' => '__id__']) }}`.replace('__id__', selectedProductId),
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                success: function(product) {
+                    $('#editProductId').val(product.id);
+                    $('#editProductName').val(product.product_name);
+                    $('#editProductCost').val(product.product_cost);
+                    $('#editProductDescription').val(product.product_description);
+                    
+                    const baseUrl = 'http://final.test/';
+                    $('#currentProductImage').attr('src', product.image_url ? baseUrl + product.image_url : '/default_image_url.jpg');
+                    $('#editModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching Product data:', error);
+                }
+            });
+        });
+
+        // Handle Update Product
+        $('#updateProduct').on('click', function(e) {
+            e.preventDefault();
+            $('#editProductNameError').text('');
+            $('#editProductCostError').text('');
+            $('#editProductDescriptionError').text('');
+            $('#editProductImageError').text('');
+
+            const formData = new FormData();
+            formData.append('product_name', $('#editProductName').val());
+            formData.append('product_cost', $('#editProductCost').val());
+            formData.append('product_description', $('#editProductDescription').val());
+
+            const imageFile = $('#editProductImage')[0].files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
             }
 
-            // Handle Edit Button Click
-            $('#productTable').on('click', '.edit-btn', function(e) {
-                e.preventDefault();
-                selectedProductId = $(this).data('id');
-                $.ajax({
-                    url: `{{ route('api.view-product', ['id' => '__id__']) }}`.replace('__id__', selectedProductId),
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    success: function(product) {
-                        $('#editProductId').val(product.id);
-                        $('#editProductName').val(product.product_name);
-                        $('#editProductCost').val(product.product_cost);
-                        $('#editProductDescription').val(product.product_description); // Set product description
-                        
-                        const baseUrl = 'http://final.test/';
-                        $('#currentProductImage').attr('src', product.image_url ? baseUrl + product.image_url : '/default_image_url.jpg');
-                        $('#editModal').modal('show');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching Product data:', error);
-                    }
-                });
-            });
-
-            // Handle Update Product
-            $('#updateProduct').on('click', function(e) {
-                e.preventDefault();
-                $('#editProductNameError').text('');
-                $('#editProductCostError').text('');
-                $('#editProductDescriptionError').text(''); // Reset description error
-                $('#editProductImageError').text('');
-
-                const formData = new FormData();
-                formData.append('product_name', $('#editProductName').val());
-                formData.append('product_cost', $('#editProductCost').val());
-                formData.append('product_description', $('#editProductDescription').val()); // Append description
-
-                // Check if an image file is selected and append it
-                const imageFile = $('#editProductImage')[0].files[0];
-                if (imageFile) {
-                    formData.append('image', imageFile);
-                }
-
-                $.ajax({
-                    url: `{{ route('api.update-product', ['id' => '__id__']) }}`.replace('__id__', selectedProductId),
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Accept': 'application/json',
-                    },
-                    data: formData,
-                    processData: false, // Important for file uploads
-                    contentType: false, // Important for file uploads
-                    success: function(response) {
-                        $('#editModal').modal('hide');
-                        fetchProductList();
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            const errors = xhr.responseJSON.errors;
-                            if (errors.product_name) {
-                                $('#editProductNameError').text(errors.product_name[0]);
-                            }
-                            if (errors.product_cost) {
-                                $('#editProductCostError').text(errors.product_cost[0]);
-                            }
-                            if (errors.product_description) {
-                                $('#editProductDescriptionError').text(errors.product_description[0]); // Handle description error
-                            }
-                            if (errors.image) {
-                                $('#editProductImageError').text(errors.image[0]);
-                            }
-                        } else {
-                            console.error('Error updating product:', xhr.responseText);
+            $.ajax({
+                url: `{{ route('api.update-product', ['id' => '__id__']) }}`.replace('__id__', selectedProductId),
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/json',
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#editModal').modal('hide');
+                    fetchProductList(currentPage); // Fetch the updated list
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        if (errors.product_name) {
+                            $('#editProductNameError').text(errors.product_name[0]);
                         }
+                        if (errors.product_cost) {
+                            $('#editProductCostError').text(errors.product_cost[0]);
+                        }
+                        if (errors.product_description) {
+                            $('#editProductDescriptionError').text(errors.product_description[0]);
+                        }
+                        if (errors.image) {
+                            $('#editProductImageError').text(errors.image[0]);
+                        }
+                    } else {
+                        console.error('Error updating product:', xhr.responseText);
                     }
-                });
+                }
             });
-
-            // Handle Delete Button Click
-            $('#productTable').on('click', '.delete-btn', function(e) {
-                e.preventDefault();
-                selectedProductId = $(this).data('id');
-                $('#deleteModal').modal('show');
-            });
-
-            // Confirm Delete
-            $('#confirmDelete').on('click', function() {
-                $.ajax({
-                    url: `{{ route('api.delete-product', ['id' => '__id__']) }}`.replace('__id__', selectedProductId),
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Accept': 'application/json',
-                    },
-                    success: function(response) {
-                        $('#deleteModal').modal('hide');
-                        fetchProductList();
-                    },
-                    error: function(xhr) {
-                        console.error('Error deleting product:', xhr.responseText);
-                    }
-                });
-            });
-
-            // Fetch the Product List on page load
-            fetchProductList();
         });
-    </script>
+
+        // Handle Delete Button Click
+        $('#productTable').on('click', '.delete-btn', function(e) {
+            e.preventDefault();
+            selectedProductId = $(this).data('id');
+            $('#deleteModal').modal('show');
+        });
+
+        // Confirm Delete
+        $('#confirmDelete').on('click', function() {
+            $.ajax({
+                url: `{{ route('api.delete-product', ['id' => '__id__']) }}`.replace('__id__', selectedProductId),
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/json',
+                },
+                success: function(response) {
+                    $('#deleteModal').modal('hide');
+                    fetchProductList(currentPage); // Refresh the list
+                },
+                error: function(xhr) {
+                    console.error('Error deleting product:', xhr.responseText);
+                }
+            });
+        });
+
+        // Handle Pagination Button Clicks
+        $('#prevPage').on('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchProductList(currentPage);
+            }
+        });
+
+        $('#nextPage').on('click', function() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchProductList(currentPage);
+            }
+        });
+
+        // Handle First and Last Page Button Clicks
+        $('#firstPage').on('click', function() {
+            currentPage = 1;
+            fetchProductList(currentPage);
+        });
+
+        $('#lastPage').on('click', function() {
+            currentPage = totalPages;
+            fetchProductList(currentPage);
+        });
+
+        // Fetch the Product List on page load
+        fetchProductList(currentPage);
+    });
+</script>
+
 @endsection

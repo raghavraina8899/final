@@ -45,7 +45,7 @@ class UserController extends Controller
 
     public function viewUsers()
     {
-        $users = User::all();
+        $users = User::paginate(8);
         return response()->json($users);
     }
     public function viewUserById($id)

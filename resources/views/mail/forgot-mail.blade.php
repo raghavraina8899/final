@@ -14,8 +14,7 @@
     <p> {{ $url }}</p>
     <p>This will let you change your password to something new. If you did not ask for this, do not worry, we will keep your password safe.</p>
     <p>Kind regards</p>
-    <p>Team Acropolis</p>
-    {{-- <p>Please change your password after logging in for the first time.</p> --}}
+    <p>Team New Acropolis</p>
 </body>
 
 </html>

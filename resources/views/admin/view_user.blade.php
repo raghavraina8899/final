@@ -1,9 +1,21 @@
 @extends('admin.layout')
 
 @section('customCss')
-    <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css"> -->
+
+
+    <style>
+        .pagination{
+            justify-content: right;
+            margin: 8px 0px;
+        }
+        .pagination button{
+            /* margin: 0 5px; */
+            border: 1px solid darkgrey;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -49,19 +61,16 @@
                                     <tbody>
                                         <!-- Data will be populated via AJAX -->
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th>{{ __('lang.s.no.') }}</th>
-                                            <th>{{ __('lang.name') }}</th>
-                                            <th>{{ __('lang.email') }}</th>
-                                            <th>{{ __('lang.phone') }}</th>
-                                            <th>{{ __('lang.role') }}</th>
-                                            <th>{{ __('lang.gender') }}</th>
-                                            <th>{{ __('lang.edit') }}</th>
-                                            <th>{{ __('lang.delete') }}</th>
-                                        </tr>
-                                    </tfoot>
                                 </table>
+                                <div class="pagination">
+                                    <div class="buttons">
+                                        <button id="prevPage" class="btn btn-primary" disabled>Previous</button>
+                                        <button id="firstPage" class="btn btn-light page-btn">First</button>
+                                        <span id="currentPage" class="page-btn"></span>
+                                        <button id="lastPage" class="btn btn-light page-btn">Last</button>
+                                        <button id="nextPage" class="btn btn-primary">Next</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,7 +103,7 @@
 @endsection
 
 @section('customJs')
-    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+    <!-- <script src="plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
     <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
@@ -106,78 +115,111 @@
     <script src="plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
     <script>
-        $(document).ready(function() {
-            const token = localStorage.getItem('api_token');
-            let deleteId = null;
+    $(document).ready(function() {
+        const token = localStorage.getItem('api_token');
+        let deleteId = null;
+        let currentPage = 1; // Track the current page
+        let totalPages = 1; // Track the total number of pages
 
-            function fetchUsers() {
-                $.ajax({
-                    url: '{{ route('api.view_users') }}',
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    success: function(data) {
-                        let tableBody = '';
-                        $.each(data, function(index, user) {
-                            tableBody += `<tr>
-                                <td>${index + 1}</td>
-                                <td>${user.name}</td>
-                                <td>${user.email}</td>
-                                <td>${user.phone}</td>
-                                <td>${user.role}</td>
-                                <td>${user.gender}</td>
-                                <td><a href="{{ url('admin/edit_user') }}/${user.id}" class="btn btn-primary">{{ __('lang.edit') }}</a></td>
-
-                                <td><a href="#" class="btn btn-danger delete-btn" data-id="${user.id}">{{ __('lang.delete') }}</a></td>
-                            </tr>`;
-                        });
-                        $('#usersTable tbody').html(tableBody);
-                        $('#usersTable').DataTable({
-                            "responsive": true,
-                            "lengthChange": false,
-                            "autoWidth": false,
-                            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                        }).buttons().container().appendTo('#usersTable_wrapper .col-md-6:eq(0)');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching user data:', error);
-                    }
-                });
-            }
-
-            // Handle Delete Button Click
-            $('#usersTable').on('click', '.delete-btn', function(e) {
-                e.preventDefault();
-                deleteId = $(this).data('id');
-                $('#deleteModal').modal('show');
+        // Function to fetch user data
+        function fetchUsers(page = 1) {
+            $.ajax({
+                url: `{{ route('api.view_users') }}?page=${page}`, // Ensure this URL is correct
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                success: function(data) {
+                    let tableBody = '';
+                    $.each(data.data, function(index, user) { // Access the user data array
+                        tableBody += `<tr>
+                            <td>${(page - 1) * data.per_page + index + 1}</td> <!-- Corrected index for proper numbering -->
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.phone}</td>
+                            <td>${user.role}</td>
+                            <td>${user.gender}</td>
+                            <td><a href="{{ url('admin/edit_user') }}/${user.id}" class="btn btn-primary">{{ __('lang.edit') }}</a></td>
+                            <td><a href="#" class="btn btn-danger delete-btn" data-id="${user.id}">{{ __('lang.delete') }}</a></td>
+                        </tr>`;
+                    });
+                    $('#usersTable tbody').html(tableBody);
+                    totalPages = data.last_page; // Get the total number of pages
+                    updatePagination(); // Update pagination
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching user data:', error);
+                }
             });
+        }
 
-            // Confirm Delete
-            $('#confirmDelete').click(function() {
-                $.ajax({
-                    url: `{{ route('api.delete_user', '') }}/${deleteId}`,
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    success: function() {
-                        $('#deleteModal').modal('hide');
-                        fetchUsers(); // Refresh the user list after deletion
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error deleting user:', error);
-                    }
-                });
-            });
+        // Function to update pagination display
+        function updatePagination() {
+            $('#currentPage').text(currentPage);
+            $('#prevPage').prop('disabled', currentPage === 1);
+            $('#nextPage').prop('disabled', currentPage === totalPages);
+        }
 
-            fetchUsers(); // Fetch user data when the page loads
+        // Handle Delete Button Click
+        $('#usersTable').on('click', '.delete-btn', function(e) {
+            e.preventDefault();
+            deleteId = $(this).data('id');
+            $('#deleteModal').modal('show');
         });
-    </script>
+
+        // Confirm Delete
+        $('#confirmDelete').click(function() {
+            $.ajax({
+                url: `{{ route('api.delete_user', '') }}/${deleteId}`, // Ensure this URL is correct
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                success: function() {
+                    $('#deleteModal').modal('hide');
+                    fetchUsers(currentPage); // Refresh the user list after deletion
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting user:', error);
+                }
+            });
+        });
+
+        // Handle Pagination Button Clicks
+        $('#prevPage').on('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchUsers(currentPage); // Fetch users for the new page
+            }
+        });
+
+        $('#nextPage').on('click', function() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchUsers(currentPage); // Fetch users for the new page
+            }
+        });
+
+        // Handle First and Last Page Button Clicks
+        $('#firstPage').on('click', function() {
+            currentPage = 1;
+            fetchUsers(currentPage); // Fetch users for the first page
+        });
+
+        $('#lastPage').on('click', function() {
+            currentPage = totalPages;
+            fetchUsers(currentPage); // Fetch users for the last page
+        });
+
+        fetchUsers(); // Fetch user data when the page loads
+    });
+</script>
+
 @endsection

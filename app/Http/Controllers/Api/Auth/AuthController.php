@@ -64,7 +64,7 @@ class AuthController extends Controller
             if ($user->role === 'admin') {
                 return $this->respondLoginSuccess($token, route('admin.dashboard'));
             } else {
-                return $this->respondLoginSuccess($token, route('/'));
+                return $this->respondLoginSuccess($token, route('events.all_events'));
             }
         }
 
