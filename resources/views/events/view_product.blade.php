@@ -147,7 +147,7 @@
         // Fetch product details
         function fetchProductDetails(productId) {
             $.ajax({
-                url: `/api/view-product/${productId}`,
+                url: `/api/view-user-product/${productId}`,
                 type: "GET",
                 dataType: "json",
                 success: function(response) {

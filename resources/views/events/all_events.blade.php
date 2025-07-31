@@ -45,7 +45,7 @@
   $(document).ready(function() {
     function fetchProducts() {
         $.ajax({
-            url: "{{ route('api.view-product-list') }}", 
+            url: "{{ route('api.view-user-product-list') }}", 
             type: "GET",
             dataType: "json",
             success: function(response) {

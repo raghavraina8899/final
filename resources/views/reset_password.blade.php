@@ -7,13 +7,13 @@
     <title>Reset Password</title>
     <base href="{{ asset('profile-assets') }}/" />
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/namari-color.css">
+    <!-- <link rel="stylesheet" href="css/namari-color.css"> -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Preloader Styles */
-        #preloader {
+        /* #preloader {
             position: fixed;
             top: 0;
             left: 0;
@@ -24,7 +24,7 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-        }
+        } */
 
         /* Form Box Styles */
         .form-box {
@@ -86,9 +86,9 @@
 </head>
 
 <body>
-    <div id="preloader">
-        <!-- Preloader content here, e.g., spinner -->
-    </div>
+    <!-- <div id="preloader">
+        
+    </div> -->
 
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -136,7 +136,7 @@
     <script>
         $(document).ready(function () {
             $(window).on('load', function () {
-                $("#preloader").fadeOut("slow");
+                // $("#preloader").fadeOut("slow");
             });
 
             // Periodically check if the token is still valid
@@ -196,7 +196,7 @@
                 }
 
                 // Show the preloader if no error
-                $('#preloader').fadeIn();
+                // $('#preloader').fadeIn();
 
                 // Submit the AJAX request to reset the password
                 $.ajax({
@@ -207,14 +207,14 @@
                         token: token
                     },
                     success: function (response) {
-                        $('#preloader').fadeOut();
+                        // $('#preloader').fadeOut();
                         showFlashMessage();
                         setTimeout(function () {
                             window.location.href = "/login";
                         }, 3000);
                     },
                     error: function (xhr) {
-                        $('#preloader').fadeOut();
+                        // $('#preloader').fadeOut();
                         var errors = xhr.responseJSON.errors;
                         if (errors && errors.new_password) {
                             $('#newPasswordError').text(errors.new_password[0]);

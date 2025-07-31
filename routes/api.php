@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\PasswordController;
 use App\Http\Controllers\Api\Admin\ProfileController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\Product\UserProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Location\BranchController;
 use App\Http\Controllers\Api\Location\CityController;
@@ -28,8 +29,21 @@ Route::get('/check-token-validity', [PasswordController::class, 'checkTokenValid
 Route::post('/reset-password', [PasswordController::class, 'resetPassword'])->name('api.reset-password');
 
 Route::get('view-product-list', [ProductController::class,'viewProductList'])->name('api.view-product-list');
+
+
+Route::get('view-user-product-list', [UserProductController::class,'viewProductList'])->name('api.view-user-product-list');
+
+
 Route::get('view-product/{id}', [ProductController::class, 'viewProduct'])->name('api.view-product');
-Route::post('/book-product/{id}', [ProductController::class, 'bookProduct'])->name('book-product');
+
+
+Route::get('view-user-product/{id}', [UserProductController::class, 'viewProduct'])->name('api.view-user-product');
+
+
+Route::post('/book-product/{id}', [ProductController::class, 'bookProduct'])->name('book-products');
+
+
+// Route::post('/book-user-product/{id}', [UserProductController::class, 'bookProduct'])->name('book-user-product');
 
 // Route::get('/my-bookings', [ProductController::class, 'viewBookings'])->name('bookings.index');
 

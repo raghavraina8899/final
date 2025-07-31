@@ -106,7 +106,7 @@
                                 <label for="country">{{ __('lang.country') }}</label>
                                 <select class="form-control" id="country" name="country_id" required>
                                     <option value="">{{ __('lang.selectCountry') }}</option>
-                                    <!-- Options will be populated dynamically -->
+
                                 </select>
                                 <p id="newCountryError" class="error-message"></p>
                             </div>
@@ -114,7 +114,7 @@
                                 <label for="state">{{ __('lang.state') }}</label>
                                 <select class="form-control" id="state" name="state_id" required disabled>
                                     <option value="">{{ __('lang.selectState') }}</option>
-                                    <!-- Options will be populated dynamically -->
+
                                 </select>
                                 <p id="newStateError" class="error-message"></p>
                             </div>
@@ -122,7 +122,7 @@
                                 <label for="city">{{ __('lang.city') }}</label>
                                 <select class="form-control" id="city" name="city_id" required disabled>
                                     <option value="">{{ __('lang.selectCity') }}</option>
-                                    <!-- Options will be populated dynamically -->
+
                                 </select>
                                 <p id="newCityError" class="error-message"></p>
                             </div>
@@ -130,7 +130,7 @@
                                 <label for="branch">{{ __('lang.branch') }}</label>
                                 <select class="form-control" id="branch" name="branch_id" required disabled>
                                     <option value="">{{ __('lang.selectBranch') }}</option>
-                                    <!-- Options will be populated dynamically -->
+
                                 </select>
                                 <p id="newBranchError" class="error-message"></p>
                             </div>
@@ -182,7 +182,7 @@
                 }
             });
 
-            // Fetch user details and populate fields
+            // User details and populate fields
             $.ajax({
                 url: `{{ url('/api/view_user') }}/${userId}`,
                 method: 'GET',
@@ -198,10 +198,8 @@
                         $('#gender').val(response.gender || '');
                         $('#address').val(response.address || '');
                         
-                        // Set the country and trigger change to load states
                         $('#country').val(response.country_id || '').trigger('change');
 
-                        // Ensure state, city, and branch are loaded after country is selected
                         if (response.country_id) {
                             loadStates(response.country_id, response.state_id, response.city_id, response.branch_id);
                         }
@@ -214,7 +212,6 @@
                 }
             });
 
-            // Function to load states and set selected state
             function loadStates(countryId, selectedStateId = null, selectedCityId = null, selectedBranchId = null) {
                 $.ajax({
                     url: '{{ url('/api/view-states-list') }}/' + countryId,
@@ -266,7 +263,6 @@
                 });
             }
 
-            // Function to load branches and set selected branch
             function loadBranches(cityId, selectedBranchId = null) {
                 $.ajax({
                     url: '{{ url('/api/view-branches-list') }}/' + cityId,
